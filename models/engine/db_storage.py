@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """This is the db_storage module. It contains our
 DbStorage class which is necessary for handling files
-in our databse"""
+in our database"""
 from os import environ
 import sqlalchemy.exc
 from sqlalchemy import create_engine
@@ -17,8 +17,8 @@ from models.user import User
 
 class DBStorage:
     """This class is the storage engine for our
-    database. It handles all the tools neeeded to allow
-    seamless tranfer of data to and fro the databse"""
+    database. It handles all the tools needed to allow
+    seamless transfer of data to and fro the database"""
     __engine = None
     __session = None
 
@@ -76,3 +76,7 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = Session()
+
+    def close(self):
+        """This closes the current session"""
+        self.__session.close()
