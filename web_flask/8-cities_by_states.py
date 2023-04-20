@@ -3,7 +3,8 @@
 A script that starts a Flask web application
 Listening on 0.0.0.0 port 5000
 Routes:
-    '/cities_by_states': display an HTML page with a list of all cities and related states
+    '/cities_by_states': display an HTML page with a list of all cities
+    and related states
 """
 
 from models import storage

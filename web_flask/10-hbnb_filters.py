@@ -3,7 +3,8 @@
 A script that starts a Flask web application
 Listening on 0.0.0.0 port 5000
 Routes:
-    '/hbnb_filters': display an HTML page with a list of all states and related cities
+    '/hbnb_filters': display an HTML page with a list of all states,
+    and related cities
 
 """
 
@@ -18,7 +19,8 @@ def hbnb_filters():
     """Displays an HTML page"""
     states = storage.all("State")
     amenities = storage.all("Amenity")
-    return render_template("10-hbnb_filters.html", states=states, amenities=amenities)
+    return render_template("10-hbnb_filters.html",
+                           states=states, amenities=amenities)
 
 
 @app.teardown_appcontext
