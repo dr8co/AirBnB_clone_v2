@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 """This is the place class"""
-import shlex
-
 from sqlalchemy.ext.declarative import declarative_base
-
-from models import Amenity
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, Table, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from os import getenv
 import models
+
 
 place_amenity = Table("place_amenity", Base.metadata,
                       Column("place_id", String(60),
