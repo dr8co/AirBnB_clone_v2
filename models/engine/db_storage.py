@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-"""This is the db_storage module. It contains our
-DbStorage class which is necessary for handling files
-in our database"""
+""" new class for sqlAlchemy """
 from os import getenv
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import (create_engine)
@@ -16,9 +14,7 @@ from models.amenity import Amenity
 
 
 class DBStorage:
-    """This class is the storage engine for our
-    database. It handles all the tools needed to allow
-    seamless transfer of data to and fro the database"""
+    """ create tables in environmental"""
     __engine = None
     __session = None
 
@@ -37,45 +33,52 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """This returns all items in the database"""
-        results = {}
+        """returns a dictionary
+        Return:
+            returns a dictionary of __object
+        """
+        dic = {}
         if cls:
             if type(cls) is str:
                 cls = eval(cls)
             query = self.__session.query(cls)
             for elem in query:
                 key = "{}.{}".format(type(elem).__name__, elem.id)
-                results[key] = elem
+                dic[key] = elem
         else:
             lista = [State, City, User, Place, Review, Amenity]
             for clase in lista:
                 query = self.__session.query(clase)
                 for elem in query:
                     key = "{}.{}".format(type(elem).__name__, elem.id)
-                    results[key] = elem
-        return results
+                    dic[key] = elem
+        return (dic)
 
     def new(self, obj):
-        """This adds a new object to the database"""
+        """add a new element in the table
+        """
         self.__session.add(obj)
 
     def save(self):
-        """This saves the current progress/session
-        of the database changes"""
+        """save changes
+        """
         self.__session.commit()
 
     def delete(self, obj=None):
-        """This deletes an item from the database"""
+        """delete an element in the table
+        """
         if obj:
             self.session.delete(obj)
 
     def reload(self):
-        """This recreates/sbegins an asql session"""
+        """configuration
+        """
         Base.metadata.create_all(self.__engine)
         sec = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sec)
         self.__session = Session()
 
     def close(self):
-        """This closes the current session"""
+        """ calls remove()
+        """
         self.__session.close()
