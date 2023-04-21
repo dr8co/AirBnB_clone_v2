@@ -15,7 +15,8 @@ class FileStorage:
     """This class manages storage of hbnb models in JSON format
     Attributes:
         __file_path (str): path to the JSON file (ex: file.json)
-        __objects (dict): empty but will store all objects by <class name>.id"""
+        __objects (dict): empty but will store all objects by
+        <class name>.id"""
 
     __file_path = 'file.json'
     __objects = {}
