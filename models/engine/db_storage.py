@@ -3,7 +3,6 @@
 DbStorage class which is necessary for handling files
 in our database"""
 from os import getenv
-import sqlalchemy.exc
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
@@ -34,7 +33,6 @@ class DBStorage:
             pool_pre_ping=True)
         if getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
-            pass
 
     def all(self, cls=None):
         """This returns all items in the database"""
