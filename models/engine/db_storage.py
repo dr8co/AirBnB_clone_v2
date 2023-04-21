@@ -49,7 +49,7 @@ class DBStorage:
         for _class in self.all_classes:
             try:
                 for record in self.__session.query(_class).all():
-                    key = f"{record.to_dict()['__class__']}.{record.id}"
+                    key = "{}.{}".format(record.to_dict()['__class__'], record.id)
                     results.update({key: record})
             except sqlalchemy.exc.SQLAlchemyError:
                 continue
