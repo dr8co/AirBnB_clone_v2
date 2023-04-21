@@ -3,15 +3,16 @@
 DbStorage class which is necessary for handling files
 in our database"""
 from os import getenv
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import (create_engine)
+from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import Base
-from models.city import City
 from models.state import State
+from models.city import City
+from models.user import User
 from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
-from models.user import User
 
 
 class DBStorage:
@@ -21,17 +22,18 @@ class DBStorage:
     __engine = None
     __session = None
 
-    all_classes = [City, State, Place, Review, Amenity, User]
-
     def __init__(self):
-        """This instantiates the database
-        and creates our engine"""
-        self.__engine = create_engine(
-            'mysql+mysqldb://{}:{}@{}/{}'.format(
-                getenv('HBNB_MYSQL_USER'), getenv('HBNB_MYSQL_PWD'),
-                getenv('HBNB_MYSQL_HOST'), getenv('HBNB_MYSQL_DB')),
-            pool_pre_ping=True)
-        if getenv('HBNB_ENV') == 'test':
+        user = getenv("HBNB_MYSQL_USER")
+        passwd = getenv("HBNB_MYSQL_PWD")
+        db = getenv("HBNB_MYSQL_DB")
+        host = getenv("HBNB_MYSQL_HOST")
+        env = getenv("HBNB_ENV")
+
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'
+                                      .format(user, passwd, host, db),
+                                      pool_pre_ping=True)
+
+        if env == "test":
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):

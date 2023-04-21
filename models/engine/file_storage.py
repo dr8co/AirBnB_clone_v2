@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-"""This module defines a class to manage file storage for hbnb clone"""
+"""This is the file storage class for AirBnB"""
 import json
-import shlex
 from models.base_model import BaseModel
 from models.user import User
 from models.state import State
@@ -9,6 +8,7 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
+import shlex
 
 
 class FileStorage:
@@ -16,11 +16,13 @@ class FileStorage:
     Attributes:
         __file_path (str): path to the JSON file (ex: file.json)
         __objects (dict): empty but will store all objects by <class name>.id"""
+
     __file_path = 'file.json'
     __objects = {}
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
+
         dic = {}
         if cls:
             dictionary = self.__objects
@@ -37,12 +39,14 @@ class FileStorage:
         """Adds new object to storage dictionary
         Args:
             obj (BaseModel): object to add to storage"""
+
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             self.__objects[key] = obj
 
     def delete(self, obj=None):
         """This method deletes the object if it exists"""
+
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             del self.__objects[key]
