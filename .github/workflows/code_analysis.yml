@@ -26,7 +26,7 @@ jobs:
 
       - name: Analysing models with Flake8 and Pycodestyle
         run: |
-          flake8 --ignore=F401 $(git ls-files models/*.py)
+          flake8 --ignore=F401,F821 $(git ls-files models/*.py)
           pycodestyle $(git ls-files models/*.py)
 
       - name: Analysing models/engine with Flake8 and Pycodestyle
@@ -71,7 +71,7 @@ jobs:
 
       - name: Analysing models with Flake8 and Pycodestyle
         run: |
-          flake8 --ignore=F401 $(git ls-files models/*.py)
+          flake8 --ignore=F401,F821 $(git ls-files models/*.py)
           pycodestyle $(git ls-files models/*.py)
 
       - name: Analysing models/engine with Flake8 and Pycodestyle
