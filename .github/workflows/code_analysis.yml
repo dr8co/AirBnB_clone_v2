@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.4", "3.8", "3.9", "3.10"]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -28,6 +28,11 @@ jobs:
       run: |
         flake8 $(git ls-files models/*.py)
         pycodestyle $(git ls-files models/*.py)
+    
+    - name: Analysing models/engine with Flake8 and Pycodestyle
+      run: |
+        flake8 $(git ls-files models/engine/*.py)
+        pycodestyle $(git ls-files models/engine/*.py)
       
     - name: Analysing tests with Flake8 and Pycodestyle
       run: |
