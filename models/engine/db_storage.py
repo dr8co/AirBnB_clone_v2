@@ -2,10 +2,10 @@
 """This is the db_storage module. It contains our
 DbStorage class which is necessary for handling files
 in our database"""
-from os import environ
+from os import getenv
 import sqlalchemy.exc
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
 from models.city import City
 from models.state import State
@@ -28,32 +28,31 @@ class DBStorage:
         """This instantiates the database
         and creates our engine"""
         self.__engine = create_engine(
-            'mysql+mysqldb://{}:{}@{}:3306/{}'.format(
-                environ['HBNB_MYSQL_USER'], environ['HBNB_MYSQL_PWD'],
-                environ['HBNB_MYSQL_HOST'], environ['HBNB_MYSQL_DB']),
+            'mysql+mysqldb://{}:{}@{}/{}'.format(
+                getenv('HBNB_MYSQL_USER'), getenv('HBNB_MYSQL_PWD'),
+                getenv('HBNB_MYSQL_HOST'), getenv('HBNB_MYSQL_DB')),
             pool_pre_ping=True)
-        if environ['HBNB_ENV'] == 'test':
+        if getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
             pass
 
     def all(self, cls=None):
         """This returns all items in the database"""
-        if cls:
-            results = {}
-            for record in self.__session.query(cls).all():
-                key = "{}.{}".format(record.to_dict()['__class__'], record.id)
-                results.update({key: record})
-            return results
-
         results = {}
-        for _class in self.all_classes:
-            try:
-                for record in self.__session.query(_class).all():
-                    key = "{}.{}".format(record.to_dict()['__class__'],
-                                         record.id)
-                    results.update({key: record})
-            except sqlalchemy.exc.SQLAlchemyError:
-                continue
+        if cls:
+            if type(cls) is str:
+                cls = eval(cls)
+            query = self.__session.query(cls)
+            for elem in query:
+                key = "{}.{}".format(type(elem).__name__, elem.id)
+                results[key] = elem
+        else:
+            lista = [State, City, User, Place, Review, Amenity]
+            for clase in lista:
+                query = self.__session.query(clase)
+                for elem in query:
+                    key = "{}.{}".format(type(elem).__name__, elem.id)
+                    results[key] = elem
         return results
 
     def new(self, obj):
@@ -67,15 +66,14 @@ class DBStorage:
 
     def delete(self, obj=None):
         """This deletes an item from the database"""
-        if obj is not None:
-            for record in self.__session.query(obj.__name__):
-                if record.id == obj.id:
-                    self.__session.delete(record)
+        if obj:
+            self.session.delete(obj)
 
     def reload(self):
         """This recreates/sbegins an asql session"""
         Base.metadata.create_all(self.__engine)
-        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        sec = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(sec)
         self.__session = Session()
 
     def close(self):
