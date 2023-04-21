@@ -41,7 +41,7 @@ class DBStorage:
         if cls:
             results = {}
             for record in self.__session.query(cls).all():
-                key = f"{record.to_dict()['__class__']}.{record.id}"
+                key = "{}.{}".format(record.to_dict()['__class__'], record.id)
                 results.update({key: record})
             return results
 
