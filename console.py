@@ -2,7 +2,6 @@
 """ Console Module """
 import cmd
 import sys
-import ast
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -116,40 +115,25 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-
-        def arrange(string):
-            args = string.split("=", 1)
-            if args[1][0] == '"' and args[1][-1] == '"' and len(args[1]) > 2:
-                args[1] = args[1][1:-1]
-                args[1] = args[1].replace("_", " ")
-                args[1] = args[1].replace('"', "\"")
-                args[1] = "\"" + args[1] + "\""
-            return (args)
-
-        values = args.split()
-        if not args:
-            print("** class name missing **")
-            return
-        elif values[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        param = {}
         try:
-            for value in values[1:]:
-                try:
-                    _args = arrange(value)
-                    param.update({_args[0]: ast.literal_eval(_args[1])})
-                except BaseException:
-                    continue
-        except BaseException:
-            pass
-        # _cmd = f"{values[0]}.update(\"{new_instance.id}\", {param})"
-        # line = self.precmd(_cmd)
-        # self.onecmd(line)
-        new_instance = HBNBCommand.classes[values[0]](**param)
+            if not args:
+                raise SyntaxError()
+            arg_list = args.split(" ")
+            kw = {}
+            for arg in arg_list[1:]:
+                arg_splited = arg.split("=")
+                arg_splited[1] = eval(arg_splited[1])
+                if type(arg_splited[1]) is str:
+                    arg_splited[1] = \
+                        arg_splited[1].replace("_", " ").replace('"', '\\"')
+                kw[arg_splited[0]] = arg_splited[1]
+        except SyntaxError:
+            print("** class name missing **")
+        except NameError:
+            print("** class doesn't exist **")
+        new_instance = HBNBCommand.classes[arg_list[0]](**kw)
         new_instance.save()
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -231,12 +215,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for v in storage.all(self.classes[args]).values():
+            for k, v in storage.all(HBNBCommand.classes[args]).items():
                 print_list.append(str(v))
         else:
             for k, v in storage.all().items():
                 print_list.append(str(v))
-
         print(print_list)
 
     def help_all(self):
@@ -247,7 +230,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage.all().items():
+        for k, v in storage._FileStorage__objects.items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)
@@ -283,7 +266,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         # determine if key is present
-        if storage.all() and key not in storage.all():
+        if key not in storage.all():
             print("** no instance found **")
             return
 
